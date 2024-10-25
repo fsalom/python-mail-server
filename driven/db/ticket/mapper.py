@@ -7,19 +7,12 @@ from driven.db.user.models import UserDBO
 
 
 class TicketDBMapper:
-
     @staticmethod
     def to_dbos(tickets_dbo_list: [TicketDBO]) -> [Ticket]:
         tickets = []
         for ticket_dbo in tickets_dbo_list:
             products = [
-                Product(
-                    name=ticket_product_dbo.product.name,
-                    quantity=ticket_product_dbo.quantity,
-                    price_per_unit=ticket_product_dbo.history_price.price_per_unit,
-                    price=ticket_product_dbo.history_price.price,
-                    weight=None
-                )
+                TicketDBMapper.ticket_product_dbo_to_domain(ticket_product_dbo)
                 for ticket_product_dbo in ticket_dbo.ticket_products.all()
             ]
             tickets.append(
@@ -34,6 +27,16 @@ class TicketDBMapper:
                 )
             )
         return tickets
+
+    @staticmethod
+    def ticket_product_dbo_to_domain(product_of_ticket: TicketProductDBO):
+        return Product(
+            name=product_of_ticket.product.name,
+            quantity=product_of_ticket.quantity,
+            price_per_unit=product_of_ticket.history_price.price_per_unit,
+            price=product_of_ticket.history_price.price,
+            weight=None
+        )
 
     @staticmethod
     def map_store(ticket: Ticket) -> StoreDBO:

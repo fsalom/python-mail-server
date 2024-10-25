@@ -30,10 +30,12 @@ async def stats(user: Annotated[User, Depends(get_user_or_refuse)],
                 api_mapper: TicketDTOMapper = Depends(Provide[TicketContainer.api_mapper]),
                 start_date: str = Query(..., description="Start date in format YYYY-MM-DD"),
                 end_date: str = Query(..., description="End date in format YYYY-MM-DD")):
-    total = await service.get_total_for(user=user.email, start_date=start_date, end_date=end_date)
-    num_tickets = await service.get_number_of_tickets_for(user=user.email, start_date=start_date, end_date=end_date)
-    num_products = await service.get_number_of_products_for(user=user.email, start_date=start_date, end_date=end_date)
-    top_products = await service.get_top_products_for(user=user.email, start_date=start_date, end_date=end_date)
+
+    date_range = api_mapper.date_str_to_domain(start_date=start_date,end_date=end_date)
+    total = await service.get_total_for(user=user.email, date_range=date_range)
+    num_tickets = await service.get_number_of_tickets_for(user=user.email, date_range=date_range)
+    num_products = await service.get_number_of_products_for(user=user.email, date_range=date_range)
+    top_products = await service.get_top_products_for(user=user.email, date_range=date_range, number=3)
     top_products_dto = api_mapper.products_to_dto(top_products)
 
     return StatsForTicketsResponse(total=total,
@@ -42,8 +44,8 @@ async def stats(user: Annotated[User, Depends(get_user_or_refuse)],
                                    top_products=top_products_dto)
 
 
-@ticket_router.get('/tickets/test')
+@ticket_router.get('/tickets/populate_tickets_date')
 @inject
-async def me(service: TicketServices = Depends(Provide[TicketContainer.service])):
-    tickets = await service.get_ticket_for_user(user="fdosalom@gmail.com")
-    return {"num_tickets": len(tickets), "tickets": [ticket.__dict__ for ticket in tickets]}
+async def populate(service: TicketServices = Depends(Provide[TicketContainer.service])):
+    await service.update_existing_tickets()
+    return {"message": "Tickets populated successfully"}
