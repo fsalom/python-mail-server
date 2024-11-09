@@ -16,7 +16,7 @@ from infrastructure.di.authentication.container import AuthenticationContainer
 auth_router = APIRouter()
 
 
-@auth_router.post('/login', status_code=200, response_model=AuthenticationResponse)
+@auth_router.post('/auth/login', status_code=200, response_model=AuthenticationResponse)
 @inject
 def auth(authentication_request: AuthenticationRequest,
          authentication_service: AuthenticationServicePort = Depends(
@@ -37,7 +37,7 @@ def auth(authentication_request: AuthenticationRequest,
                         content=jsonable_encoder(api_rest_mapper.to_dto(tokens=tokens)))
 
 
-@auth_router.post('/refresh', status_code=200, response_model=AuthenticationResponse)
+@auth_router.post('/auth/refresh', status_code=200, response_model=AuthenticationResponse)
 @inject
 def auth_refresh(authentication_request: AuthenticationRefreshRequest,
                  authentication_service: AuthenticationServicePort = Depends(
@@ -57,7 +57,7 @@ def auth_refresh(authentication_request: AuthenticationRefreshRequest,
                         content=jsonable_encoder(api_rest_mapper.to_dto(tokens=tokens)))
 
 
-@auth_router.post('/logout', status_code=200, response_model=AuthenticationResponse)
+@auth_router.post('/auth/logout', status_code=200, response_model=AuthenticationResponse)
 @inject
 def auth_logout(user: Annotated[User, Depends(get_user_or_refuse)],
                 authentication_service: AuthenticationServicePort = Depends(
