@@ -30,7 +30,7 @@ def auth(authentication_request: AuthenticationRequest,
                                           password=authentication_request.password,
                                           client_id=authentication_request.client_id)
     if tokens is None:
-        return JSONResponse(status_code=status.HTTP_401_UNAUTHORIZED,
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
                             content={"message": "Not authenticated"})
 
     return JSONResponse(status_code=status.HTTP_201_CREATED,
