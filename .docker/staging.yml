@@ -20,7 +20,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"       # Limita el tamaño de cada archivo de log a 10 MB
+        max-size: "10m"
         max-file: "3"
 
   postgres:
