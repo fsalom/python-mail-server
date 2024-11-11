@@ -43,10 +43,7 @@ services:
   nginx:
     container_name: 'nginx'
     restart: always
-    build:
-      context: ..
-      dockerfile: .docker/nginx/dev/Dockerfile
-    entrypoint: [ "/config/entrypoint.sh" ]
+    build: 'nginx/dev'
     cap_add:
       - NET_ADMIN
     environment:
@@ -59,7 +56,7 @@ services:
       - EMAIL=fdosalom@gmail.com
     volumes:
       - 'nginx:/config'
-      - './.docker/nginx/dev/fail2ban/fail2ban-logrotate.conf:/etc/logrotate.d/fail2ban'
+      - 'nginx:/etc/logrotate.d'
     depends_on:
       - app
     ports:
