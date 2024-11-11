@@ -11,7 +11,7 @@ COPY .docker/nginx/dev/fail2ban/fail2ban-logrotate.conf /etc/logrotate.d/fail2ba
 
 # Copiar el script de inicio desde la ubicación correcta
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /config/entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 # Establecer el script como entrypoint
 ENTRYPOINT ["entrypoint.sh"]
