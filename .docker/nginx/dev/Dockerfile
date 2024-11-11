@@ -8,4 +8,3 @@ COPY entrypoint.sh /config/entrypoint.sh
 # Comando de verificación
 RUN ls -l /config
 RUN chmod +x /config/entrypoint.sh
-ENTRYPOINT ["/config/entrypoint.sh"]
