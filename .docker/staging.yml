@@ -56,6 +56,7 @@ services:
       - EMAIL=fdosalom@gmail.com
     volumes:
       - 'nginx:/config'
+      - './fail2ban-logrotate.conf:/etc/logrotate.d/fail2ban'
     depends_on:
       - app
     ports:
