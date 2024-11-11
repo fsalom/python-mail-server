@@ -12,6 +12,7 @@ services:
     volumes:
       - mediadata:/media
       - staticdata:/static
+      - poetry_cache:/root/.cache/pypoetry
     depends_on:
       - postgres
     networks:
@@ -73,6 +74,7 @@ volumes:
   pgdata:
   mediadata:
   staticdata:
+  poetry_cache:
 
 networks:
   dashboard:
