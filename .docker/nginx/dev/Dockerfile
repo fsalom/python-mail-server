@@ -14,4 +14,4 @@ COPY .docker/nginx/dev/entrypoint.sh /config/entrypoint.sh
 RUN chmod +x /config/entrypoint.sh
 
 # Establecer el script como entrypoint
-ENTRYPOINT ["/config/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
