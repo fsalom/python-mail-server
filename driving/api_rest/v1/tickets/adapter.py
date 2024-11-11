@@ -30,12 +30,28 @@ async def stats(user: Annotated[User, Depends(get_user_or_refuse)],
                 api_mapper: TicketDTOMapper = Depends(Provide[TicketContainer.api_mapper]),
                 start_date: str = Query(..., description="Start date in format YYYY-MM-DD"),
                 end_date: str = Query(..., description="End date in format YYYY-MM-DD")):
-
-    date_range = api_mapper.date_str_to_domain(start_date=start_date,end_date=end_date)
+    date_range = api_mapper.date_str_to_domain(start_date=start_date, end_date=end_date)
     total = await service.get_total_for(user=user.email, date_range=date_range)
     num_tickets = await service.get_number_of_tickets_for(user=user.email, date_range=date_range)
     num_products = await service.get_number_of_products_for(user=user.email, date_range=date_range)
     top_products = await service.get_top_products_for(user=user.email, date_range=date_range, number=3)
+    top_products_dto = api_mapper.products_to_dto(top_products)
+
+    return StatsForTicketsResponse(total=total,
+                                   num_tickets=num_tickets,
+                                   num_products=num_products,
+                                   top_products=top_products_dto)
+
+
+@ticket_router.get('/tickets/stats/all')
+@inject
+async def stats(user: Annotated[User, Depends(get_user_or_refuse)],
+                service: TicketServicePort = Depends(Provide[TicketContainer.service]),
+                api_mapper: TicketDTOMapper = Depends(Provide[TicketContainer.api_mapper])):
+    total = await service.get_total_for(user=user.email, date_range=None)
+    num_tickets = await service.get_number_of_tickets_for(user=user.email, date_range=None)
+    num_products = await service.get_number_of_products_for(user=user.email, date_range=None)
+    top_products = await service.get_top_products_for(user=user.email, date_range=None, number=3)
     top_products_dto = api_mapper.products_to_dto(top_products)
 
     return StatsForTicketsResponse(total=total,

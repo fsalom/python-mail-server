@@ -47,11 +47,16 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
 
     async def get_total_for(self, user: str, date_range: DateRange) -> float:
         def _get_total(current_user, _date_range) -> float:
-            tickets = TicketDBO.objects.filter(
-                email__email=current_user,
-                date__gte=_date_range.start,
-                date__lte=_date_range.end
-            )
+            if date_range:
+                tickets = TicketDBO.objects.filter(
+                    email__email=current_user,
+                    date__gte=_date_range.start,
+                    date__lte=_date_range.end
+                )
+            else:
+                tickets = TicketDBO.objects.filter(
+                    email__email=current_user
+                )
             return tickets.aggregate(total=models.Sum('total'))['total'] or 0.0
 
         total = await sync_to_async(_get_total)(user, date_range)
@@ -59,22 +64,30 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
 
     async def get_number_of_tickets_for(self, user: str, date_range: DateRange) -> int:
         def _get_ticket_count(current_user, _date_range) -> int:
-            return TicketDBO.objects.filter(
-                email__email=current_user,
-                date__gte=_date_range.start,
-                date__lte=_date_range.end
-            ).count()
+            if date_range:
+                return TicketDBO.objects.filter(
+                    email__email=current_user,
+                    date__gte=_date_range.start,
+                    date__lte=_date_range.end).count()
+            else:
+                return TicketDBO.objects.filter(
+                    email__email=current_user).count()
 
         count = await sync_to_async(_get_ticket_count)(user, date_range)
         return count
 
     async def get_number_of_products_for(self, user: str, date_range: DateRange) -> int:
         def _get_product_count(current_user, _date_range) -> int:
-            tickets = TicketDBO.objects.filter(
-                email__email=current_user,
-                date__gte=_date_range.start,
-                date__lte=_date_range.end
-            )
+            if date_range:
+                tickets = TicketDBO.objects.filter(
+                    email__email=current_user,
+                    date__gte=_date_range.start,
+                    date__lte=_date_range.end
+                )
+            else:
+                tickets = TicketDBO.objects.filter(
+                    email__email=current_user
+                )
             return TicketProductDBO.objects.filter(ticket__in=tickets).aggregate(
                 total_quantity=models.Sum('quantity')
             )['total_quantity'] or 0
@@ -84,11 +97,16 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
 
     async def get_top_products_for(self, user: str, date_range: DateRange, number: int = 10) -> [Product]:
         def _get_top_products(current_user, _date_range, number) -> [Product]:
-            tickets = TicketDBO.objects.filter(
-                email__email=current_user,
-                date__gte=_date_range.start,
-                date__lte=_date_range.end
-            )
+            if date_range:
+                tickets = TicketDBO.objects.filter(
+                    email__email=current_user,
+                    date__gte=_date_range.start,
+                    date__lte=_date_range.end
+                )
+            else:
+                tickets = TicketDBO.objects.filter(
+                    email__email=current_user
+                )
 
             _top_products = TicketProductDBO.objects.filter(ticket__in=tickets).values(
                 'product'
