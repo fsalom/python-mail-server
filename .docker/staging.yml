@@ -20,7 +20,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-size: "10m"
+        max-size: "10m"       # Limita el tamaño de cada archivo de log a 10 MB
         max-file: "3"
 
   postgres:
@@ -43,9 +43,7 @@ services:
   nginx:
     container_name: 'nginx'
     restart: always
-    build:
-      context: ..
-      dockerfile: .docker/nginx/dev/Dockerfile
+    build: 'nginx/dev'
     cap_add:
       - NET_ADMIN
     environment:
