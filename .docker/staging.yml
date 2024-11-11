@@ -43,7 +43,9 @@ services:
   nginx:
     container_name: 'nginx'
     restart: always
-    build: 'nginx/dev'
+    build:
+      context: ..
+      dockerfile: .docker/nginx/dev/Dockerfile
     cap_add:
       - NET_ADMIN
     environment:
