@@ -44,7 +44,7 @@ services:
     container_name: 'nginx'
     restart: always
     build: 'nginx/dev'
-    entrypoint: ["/config/entrypoint.sh"]
+    entrypoint: ["entrypoint.sh"]
     cap_add:
       - NET_ADMIN
     environment:
