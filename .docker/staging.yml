@@ -44,7 +44,7 @@ services:
     container_name: 'nginx'
     restart: always
     build:
-      context: .
+      context: ..
       dockerfile: .docker/nginx/dev/Dockerfile
     entrypoint: [ "/config/entrypoint.sh" ]
     cap_add:
