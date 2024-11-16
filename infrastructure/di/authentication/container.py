@@ -1,18 +1,24 @@
 from dependency_injector import containers, providers
 from fastapi.security import OAuth2PasswordBearer
 
-from application.services.authentication_services import AuthenticationServices
+from application.services.authentication_services import AuthServices
+from driven.apple.adapter import AppleRepositoryAdapter
 from driven.db.authentication.adapter import AuthenticationDBRepositoryAdapter
+from driven.google.adapter import GoogleRepositoryAdapter
 
 
-class AuthenticationContainer(containers.DeclarativeContainer):
+class AuthContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
     wiring_config = containers.WiringConfiguration(modules=["driving.api_rest.security",
                                                             "driving.api_rest.v1.authentication.adapter"])
     db_repository = providers.Factory(AuthenticationDBRepositoryAdapter)
+    google_repository = providers.Factory(GoogleRepositoryAdapter)
+    apple_repository = providers.Factory(AppleRepositoryAdapter)
     oauth2_scheme = providers.Singleton(OAuth2PasswordBearer, tokenUrl="token")
 
     service = providers.Factory(
-        AuthenticationServices,
-        db_repository=db_repository
+        AuthServices,
+        db_repository=db_repository,
+        google_repository=google_repository,
+        apple_repository=apple_repository,
     )
