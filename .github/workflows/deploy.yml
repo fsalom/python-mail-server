@@ -54,8 +54,11 @@ jobs:
     - name: Clean old volumes
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker volume prune -a -f"
 
+    - name: Build application using docker-compose
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker compose -f .docker/staging.yml up --build -d"
+
     - name: Deploy application using docker-compose
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker compose -f .docker/staging.yml up --build -d && docker compose -f .docker/staging.yml up -d"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker compose -f .docker/staging.yml up -d"
 
     - name: Docker ps
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker ps"
