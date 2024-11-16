@@ -2,6 +2,9 @@ from typing import Annotated
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends, Query
+from fastapi.encoders import jsonable_encoder
+from starlette import status
+from starlette.responses import JSONResponse
 
 from application.ports.driving.tickets_service_port import TicketServicePort
 from driving.api_rest.v1.tickets.mapper import TicketDTOMapper
@@ -20,7 +23,10 @@ async def me(user: Annotated[User, Depends(get_user_or_refuse)],
              service: TicketServicePort = Depends(Provide[TicketContainer.service]),
              api_mapper: TicketDTOMapper = Depends(Provide[TicketContainer.api_mapper])):
     tickets = await service.get_ticket_for_user(user=user.email)
-    return api_mapper.to_dto(tickets)
+    return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder(api_mapper.to_dto(tickets))
+        )
 
 
 @ticket_router.get('/tickets/stats')
