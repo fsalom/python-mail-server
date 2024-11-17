@@ -11,14 +11,13 @@ server {
     listen 443 ssl;
     server_name tickets.rudo.es;
 
-    # Ruta a los certificados SSL
-    ssl_certificate /etc/ssl/certs/tickets.rudo.es.crt;
-    ssl_certificate_key /etc/ssl/private/tickets.rudo.es.key;
+    # enable subfolder method reverse proxy confs
+    include /config/nginx/proxy-confs/*.subfolder.conf;
+    # all ssl related config moved to ssl.conf
+    include /config/nginx/ssl.conf;
 
-    # Mejora de la seguridad SSL
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
-    ssl_prefer_server_ciphers on;
+    # enable for ldap auth
+    #include /config/nginx/ldap.conf;
 
     # Tamaño máximo para el cuerpo de la solicitud
     client_max_body_size 512M;
