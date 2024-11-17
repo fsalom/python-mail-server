@@ -72,10 +72,10 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
-      - URL=api.micestadelacompra.com
+      - URL=tickets.rudo.es
       - SUBDOMAINS=www,
       - VALIDATION=http
-      - EMAIL=fdosalom.dev@gmail.com
+      - EMAIL=fdosalom@gmail.com
     volumes:
       - 'nginx:/config'
       - 'nginx:/etc/logrotate.d'

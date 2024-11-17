@@ -2,7 +2,7 @@ include /usr/local/etc/nginx/sites-enabled/*;
 
 server {
     listen 80;
-    server_name api.micestadelacompra.com;
+    server_name tickets.rudo.es;
     client_max_body_size 512M;
 
     location /static/ {
@@ -39,7 +39,7 @@ server {
  # enable for ldap auth
  #include /config/nginx/ldap.conf;
 
- server_name api.micestadelacompra.com;
+ server_name tickets.rudo.es;
  client_max_body_size 512M;
 
  location / {
