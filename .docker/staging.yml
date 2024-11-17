@@ -23,6 +23,28 @@ services:
         max-size: "10m"       # Limita el tamaño de cada archivo de log a 10 MB
         max-file: "3"
 
+  cronjob:
+    container_name: cronjob
+    build:
+      context: ..
+      dockerfile: .docker/app/Dockerfile  # Usa el mismo Dockerfile que `app`
+    command: python cronjob.py           # Ejecuta el cronjob
+    env_file: 'environments/staging.env'
+    image: 'cronjob'
+    volumes:
+      - mediadata:/media
+      - staticdata:/static
+      - poetry_cache:/root/.cache/pypoetry
+    depends_on:
+      - postgres
+    networks:
+      - dashboard
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"       # Limita el tamaño de cada archivo de log a 10 MB
+        max-file: "3"
+
   postgres:
     container_name: 'postgres'
     restart: always
@@ -50,10 +72,10 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
-      - URL=tickets.rudo.es
+      - URL=api.micestadelacompra.com
       - SUBDOMAINS=www,
       - VALIDATION=http
-      - EMAIL=fdosalom@gmail.com
+      - EMAIL=fdosalom.dev@gmail.com
     volumes:
       - 'nginx:/config'
       - 'nginx:/etc/logrotate.d'

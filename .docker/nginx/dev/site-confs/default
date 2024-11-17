@@ -1,47 +1,10 @@
+include /usr/local/etc/nginx/sites-enabled/*;
+
 server {
     listen 80;
-    server_name tickets.rudo.es;
-
-    # Redirigir todas las solicitudes a HTTPS
-    return 301 https://$host$request_uri;
-}
-
-# Configuración para HTTPS
-server {
-    listen 443 ssl;
-    server_name tickets.rudo.es;
-
-    # enable subfolder method reverse proxy confs
-    include /config/nginx/proxy-confs/*.subfolder.conf;
-    # all ssl related config moved to ssl.conf
-    include /config/nginx/ssl.conf;
-
-    # enable for ldap auth
-    #include /config/nginx/ldap.conf;
-
-    # Tamaño máximo para el cuerpo de la solicitud
+    server_name api.micestadelacompra.com;
     client_max_body_size 512M;
 
-    # Manejo de las solicitudes al backend
-    location / {
-        proxy_pass http://app:8000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Authorization $http_authorization;
-    }
-
-    location /api/ {
-        proxy_pass http://app:8001;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Authorization $http_authorization;
-    }
-
-    # Manejo de archivos estáticos
     location /static/ {
         alias /infrastructure/static/;
     }
@@ -49,4 +12,56 @@ server {
     location /media/ {
         alias /media/;
     }
+
+    location / {
+        proxy_pass http://app:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+    location /api/ {
+        proxy_pass http://app:8001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+
+server {
+ listen 443 ssl;
+
+# enable subfolder method reverse proxy confs
+ include /config/nginx/proxy-confs/*.subfolder.conf;
+# all ssl related config moved to ssl.conf
+ include /config/nginx/ssl.conf;
+
+ # enable for ldap auth
+ #include /config/nginx/ldap.conf;
+
+ server_name api.micestadelacompra.com;
+ client_max_body_size 512M;
+
+ location / {
+     proxy_pass http://app:8000;
+     proxy_set_header Host $host;
+     proxy_set_header X-Forwarded-Proto $scheme;
+     proxy_set_header X-Real-IP $remote_addr;
+     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ }
+
+ location /api/ {
+        proxy_pass http://app:8001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
+ location /static/ {
+     alias /infrastructure/static/;
+ }
+
+ location /media/ {
+     alias /media/;
+ }
 }
