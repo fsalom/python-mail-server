@@ -30,6 +30,8 @@ services:
       dockerfile: .docker/app/Dockerfile  # Usa el mismo Dockerfile que `app`
     command: python cronjob.py           # Ejecuta el cronjob
     env_file: 'environments/staging.env'
+    environment:
+      - DJANGO_SETTINGS_MODULE=infrastructure.django.settings
     image: 'cronjob'
     volumes:
       - mediadata:/media

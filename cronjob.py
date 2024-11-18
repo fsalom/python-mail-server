@@ -1,17 +1,17 @@
 import os
-import time
 import django
+django.setup()
+
 from application.services.mail_services import MailServices
 from driven.mail.mail_repository_adapter import MailRepositoryAdapter
 from driven.db.mail.adapter import MailDBRepositoryAdapter
 from driven.db.ticket.adapter import TicketDBRepositoryAdapter
 from driven.db.ticket.mapper import TicketDBMapper
 from driving.mails.adapter import MailsAdapter
+import time
+
 
 def run_cronjob():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'infrastructure.django.settings')
-    django.setup()
-
     print("Starting cronjob...")
 
     mail_repository_adapter = MailRepositoryAdapter()
