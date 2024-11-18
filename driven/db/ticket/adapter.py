@@ -40,7 +40,7 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
 
     async def get_tickets_for(self, user: str) -> List[Ticket]:
         def _get_tickets(current_user) -> List[Ticket]:
-            ticket_dbo_list = TicketDBO.objects.filter(email__email=current_user).order_by('date')
+            ticket_dbo_list = TicketDBO.objects.filter(email__email=current_user).order_by('-date')
             return TicketDBMapper.to_domain(ticket_dbo_list)
 
         tickets = await sync_to_async(_get_tickets)(user)
