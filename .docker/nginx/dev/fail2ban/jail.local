@@ -57,7 +57,7 @@ filter   = nginx-deny
 logpath  = /config/log/nginx/error.log
 
 [nginx-unauthorized]
-backend  = systemd
+backend  = polling
 enabled  = true
 port     = http,https
 filter   = nginx-unauthorized
