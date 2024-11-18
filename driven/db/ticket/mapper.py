@@ -8,7 +8,7 @@ from driven.db.user.models import UserDBO
 
 class TicketDBMapper:
     @staticmethod
-    def to_dbos(tickets_dbo_list: [TicketDBO]) -> [Ticket]:
+    def to_domain(tickets_dbo_list: [TicketDBO]) -> [Ticket]:
         tickets = []
         for ticket_dbo in tickets_dbo_list:
             products = [
@@ -21,7 +21,7 @@ class TicketDBMapper:
                     products=products,
                     total=ticket_dbo.total,
                     iva=0.0,
-                    date=str(ticket_dbo.date_raw),
+                    date=str(ticket_dbo.date),
                     email=ticket_dbo.email.email,
                     location=ticket_dbo.location.location_info,
                 )
