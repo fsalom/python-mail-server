@@ -11,4 +11,4 @@ def add_routers(app: FastAPI):
     # v1
     app.include_router(auth_router, prefix='/api/v1')
     app.include_router(user_router, prefix='/api/v1')
-    app.include_router(ticket_router)
+    app.include_router(ticket_router, prefix='/test')
