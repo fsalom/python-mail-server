@@ -1,6 +1,7 @@
 from asgiref.sync import sync_to_async
 
 from application.ports.driven.database.ticket.db_repository import TicketDBRepositoryPort
+from application.ports.driven.database.user.db_repository import UserDBRepositoryPort
 from application.ports.driving.tickets_service_port import TicketServicePort
 from domain.date_range import DateRange
 from domain.product import Product
