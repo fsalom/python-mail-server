@@ -1,9 +1,13 @@
 import re
 
 from application.ports.driven.database.mail.db_repository import MailDBRepositoryPort
+from application.ports.driven.database.notification.notification_repository import NotificationDBRepositoryPort
 from application.ports.driven.database.ticket.db_repository import TicketDBRepositoryPort
+from application.ports.driven.database.user.db_repository import UserDBRepositoryPort
+from application.ports.driven.firebase.repository import FirebaseRepositoryPort
 from application.ports.driven.mail.mail_repository_port import MailRepositoryPort
 from application.ports.driving.mail_service_port import MailServicePort
+from domain.notification import Notification
 from domain.product import Product
 from domain.ticket import Ticket
 
@@ -12,61 +16,51 @@ class MailServices(MailServicePort):
     def __init__(self,
                  mail_repository: MailRepositoryPort,
                  ticket_db_repository: TicketDBRepositoryPort,
-                 mail_db_repository: MailDBRepositoryPort):
+                 mail_db_repository: MailDBRepositoryPort,
+                 user_db_repository: UserDBRepositoryPort,
+                 notification_db_repository: NotificationDBRepositoryPort,
+                 firebase_repository: FirebaseRepositoryPort,
+                 ):
         self.mail_repository = mail_repository
         self.ticket_db_repository = ticket_db_repository
         self.mail_db_repository = mail_db_repository
-
-    def test(self):
-        content = '''MERCADONA, S.A. A-46103834
-C/ MENÉNDEZ Y PELAYO 35
-46010 VALENCIA
-TELÉFONO: 963613959
-16/09/2024 10:37 OP: 3049233
-FACTURA SIMPLIFICADA: 2475-014-371662
-Descripción P. Unit Importe
-1 ARROZ INTEGRAL 1,10
-1 MOUSSE PROTEIN CHOCO 1,30
-1 BOLSA PLASTICO 0,15
-1 ARÁNDANO 225 GR 3,09
-1 T POLLO NATURAL 1,95
-1 AGUACATE
-0,236 kg 5,10 €/kg 1,20
-1 BOLSA PLASTICO 0,15
-1 +PROT CHOCO-NATA 2,90
-1 + PROTEÍNAS FLAN 2,00
-1 JAMON S. EXTRA FINO 2,45
-1 CALAMAR PEQUEÑO 5,10
-1 ESCALOPIN SALMON 7,76
-1 MOUSSE PROTEIN CHOCO 1,30
-1 GUACAMOLE 200 G 1,85
-2 CLARA LIQUIDA PASTEU 1,55 3,10
-1 ESP VERDE FINO 2,29
-1 OBLEAS PARA HELADO 0,70
-1 3 VEGETALES 1,64
-1 PORCIONES 85% CACAO 3,20
-1 CEBOLLA CARAMELIZADA 1,70
-TOTAL (€) 8,79
-TARJETA BANCARIA 8,79
-IVA BASE IMPONIBLE (€) CUOTA (€)
-0% 4,29 0,00
-10% 3,95 0,40
-21% 0,12 0,03
-TOTAL 8,36 0,43
-TARJ. BANCARIA: **** **** **** 9018
-N.C: 098100902 AUT: 558083
-AID: A0000000041010 ARC: 00
-MASTERCARD
-Importe: 8,79 € MASTERCARD
-SE ADMITEN DEVOLUCIONES CON TICKET
-        '''
-        ticket = self.analyze(content=content, email="mail")
+        self.notification_db_repository = notification_db_repository
+        self.firebase_repository = firebase_repository
+        self.user_db_repository = user_db_repository
 
     def process(self):
         mails = self.mail_repository.read()
         for mail in mails:
             ticket = self.analyze(content=mail.content, email=mail.email)
             self.ticket_db_repository.save(ticket)
+            self.send_notification(mail.email)
+
+    def send_notification(self, email: str):
+        try:
+            user = self.user_db_repository.get(email=email)
+            if not user:
+                raise ValueError(f"No user found with email: {email}")
+
+            devices = list(self.notification_db_repository.get_devices(user))
+            if not devices:
+                return
+
+            notification = Notification(
+                title="Nuevo ticket",
+                content="Estamos procesando tu nuevo ticket",
+                created_by=user)
+
+            if len(devices) > 1:
+                self.firebase_repository.send_bulk_notification(
+                    notification, [device.device_id for device in devices]
+                )
+            else:
+                self.firebase_repository.send_single_notification(
+                    notification, devices[0].device_id
+                )
+
+        except Exception as e:
+            print(f"Error sending notification: {e}")
 
     def analyze(self, content: str, email: str):
         id_pattern = r"(FACTURA(?: SIMPLIFICADA)?(?:.*?)(\d{4}-\d{3}-\d{6}))"
@@ -160,6 +154,51 @@ SE ADMITEN DEVOLUCIONES CON TICKET
                               weight=weight)
             products.append(product)
         return products
+
+        def test(self):
+            content = '''MERCADONA, S.A. A-46103834
+    C/ MENÉNDEZ Y PELAYO 35
+    46010 VALENCIA
+    TELÉFONO: 963613959
+    16/09/2024 10:37 OP: 3049233
+    FACTURA SIMPLIFICADA: 2475-014-371662
+    Descripción P. Unit Importe
+    1 ARROZ INTEGRAL 1,10
+    1 MOUSSE PROTEIN CHOCO 1,30
+    1 BOLSA PLASTICO 0,15
+    1 ARÁNDANO 225 GR 3,09
+    1 T POLLO NATURAL 1,95
+    1 AGUACATE
+    0,236 kg 5,10 €/kg 1,20
+    1 BOLSA PLASTICO 0,15
+    1 +PROT CHOCO-NATA 2,90
+    1 + PROTEÍNAS FLAN 2,00
+    1 JAMON S. EXTRA FINO 2,45
+    1 CALAMAR PEQUEÑO 5,10
+    1 ESCALOPIN SALMON 7,76
+    1 MOUSSE PROTEIN CHOCO 1,30
+    1 GUACAMOLE 200 G 1,85
+    2 CLARA LIQUIDA PASTEU 1,55 3,10
+    1 ESP VERDE FINO 2,29
+    1 OBLEAS PARA HELADO 0,70
+    1 3 VEGETALES 1,64
+    1 PORCIONES 85% CACAO 3,20
+    1 CEBOLLA CARAMELIZADA 1,70
+    TOTAL (€) 8,79
+    TARJETA BANCARIA 8,79
+    IVA BASE IMPONIBLE (€) CUOTA (€)
+    0% 4,29 0,00
+    10% 3,95 0,40
+    21% 0,12 0,03
+    TOTAL 8,36 0,43
+    TARJ. BANCARIA: **** **** **** 9018
+    N.C: 098100902 AUT: 558083
+    AID: A0000000041010 ARC: 00
+    MASTERCARD
+    Importe: 8,79 € MASTERCARD
+    SE ADMITEN DEVOLUCIONES CON TICKET
+            '''
+            ticket = self.analyze(content=content, email="mail")
 
     @staticmethod
     def extract_products_section(ticket_text):
