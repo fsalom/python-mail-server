@@ -12,11 +12,11 @@ class AuthenticationDBRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    def login_from_google_info(self, info: GoogleInfo, client_id: str) -> Tokens | None:
+    def login_from_google_info(self, user: User, client_id: str) -> Tokens | None:
         pass
 
     @abstractmethod
-    def login_from_apple_info(self, info: AppleInfo, client_id: str) -> Tokens | None:
+    def login_from_apple_info(self, user: User, client_id: str) -> Tokens | None:
         pass
 
     @abstractmethod
