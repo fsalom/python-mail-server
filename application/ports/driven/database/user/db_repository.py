@@ -5,5 +5,9 @@ from domain.user import User
 
 class UserDBRepositoryPort(ABC):
     @abstractmethod
-    def get(self, user: str) -> User:
+    def get(self, email: str) -> User:
+        pass
+
+    @abstractmethod
+    def get_or_create_user_by_email(self, email: str) -> User | None:
         pass

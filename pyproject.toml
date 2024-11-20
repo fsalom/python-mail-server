@@ -25,6 +25,7 @@ pillow = "10.4.0"
 gunicorn = "23.0.0"
 APScheduler = "3.10.4"
 dependency-injector = "4.42.0"
+firebase-admin = "^6.5.0"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -2,6 +2,7 @@ from asgiref.sync import sync_to_async
 
 from application.ports.driven.apple.apple_repository_port import AppleRepositoryPort
 from application.ports.driven.database.authentication.db_repository import AuthenticationDBRepositoryPort
+from application.ports.driven.database.user.db_repository import UserDBRepositoryPort
 from application.ports.driven.google.google_repository import GoogleRepositoryPort
 from application.ports.driving.authentication_service_port import AuthServicePort
 from domain.tokens import Tokens
@@ -13,11 +14,13 @@ class AuthServices(AuthServicePort):
     def __init__(self,
                  db_repository: AuthenticationDBRepositoryPort,
                  google_repository: GoogleRepositoryPort,
-                 apple_repository: AppleRepositoryPort
+                 apple_repository: AppleRepositoryPort,
+                 user_db_repository: UserDBRepositoryPort
                  ):
         self.db_repository = db_repository
         self.google_repository = google_repository
         self.apple_repository = apple_repository
+        self.user_db_repository = user_db_repository
 
     def refresh(self, refresh_token: str, client_id: str) -> Tokens | None:
         return self.db_repository.refresh(refresh_token, client_id)
@@ -28,14 +31,16 @@ class AuthServices(AuthServicePort):
     def login_from_google_login(self, id_token: str, client_id: str) -> Tokens | None:
         google_info = self.google_repository.validate_token(id_token)
         if google_info:
-            return self.db_repository.login_from_google_info(google_info, client_id)
+            user = self.user_db_repository.get_or_create_user_by_email(google_info.email)
+            return self.db_repository.login_from_google_info(user, client_id)
         else:
             return None
 
     def login_from_apple_login(self, auth_code: str, client_id: str) -> Tokens | None:
         apple_info = self.apple_repository.validate_token(auth_code)
         if apple_info:
-            return self.db_repository.login_from_apple_info(apple_info, client_id)
+            user = self.user_db_repository.get_or_create_user_by_email(apple_info.email)
+            return self.db_repository.login_from_apple_info(user, client_id)
         else:
             return None
 
