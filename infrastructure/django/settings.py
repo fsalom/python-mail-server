@@ -50,6 +50,7 @@ PROJECT_APPS = [
     'driven.db.ticket',
     'driven.db.user',
     'driven.db.mail',
+    'driven.db.notification',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
