@@ -5,7 +5,6 @@ from django.utils import timezone
 from oauth2_provider.models import RefreshToken, Application, AccessToken
 from oauth2_provider.settings import oauth2_settings
 from application.ports.driven.database.authentication.db_repository import AuthenticationDBRepositoryPort
-from domain.apple_info import AppleInfo
 from domain.google_info import GoogleInfo
 from domain.tokens import Tokens
 from domain.user import User
@@ -78,8 +77,7 @@ class AuthenticationDBRepositoryAdapter(AuthenticationDBRepositoryPort):
 
         return self.get_token_for_user(user, application)
 
-    def login_from_google_info(self, info: GoogleInfo, client_id: str) -> Tokens | None:
-        user = self._get_or_create_user_by_email(info.email)
+    def login_from_google_info(self, user: User, client_id: str) -> Tokens | None:
         if user is None:
             return None
 
@@ -87,8 +85,7 @@ class AuthenticationDBRepositoryAdapter(AuthenticationDBRepositoryPort):
 
         return self.get_token_for_user(user, application)
 
-    def login_from_apple_info(self, info: AppleInfo, client_id: str) -> Tokens | None:
-        user = self._get_or_create_user_by_email(info.email)
+    def login_from_apple_info(self, user: User, client_id: str) -> Tokens | None:
         if user is None:
             return None
 
@@ -106,16 +103,10 @@ class AuthenticationDBRepositoryAdapter(AuthenticationDBRepositoryPort):
         except Exception as e:
             return None
 
-    def _get_or_create_user_by_email(self, email: str) -> User | None:
-        try:
-            user, _ = UserDBO.objects.get_or_create(email=email)
-            return user
-        except Exception as e:
-            return None
-
-    def get_token_for_user(self, user: User, application: Application | None) -> Tokens:
+    def get_token_for_user(self, user: User, application: Application) -> Tokens:
+        user_dbo = UserDBO.objects.get(id=user.id)
         access_token = AccessToken.objects.create(
-            user=user,
+            user=user_dbo,
             application=application,
             expires=self.get_expire_time(),
             token=oauth2_settings.ACCESS_TOKEN_GENERATOR(),
@@ -123,7 +114,7 @@ class AuthenticationDBRepositoryAdapter(AuthenticationDBRepositoryPort):
         )
 
         refresh_token = RefreshToken.objects.create(
-            user=user,
+            user=user_dbo,
             token=oauth2_settings.REFRESH_TOKEN_GENERATOR(),
             application=application,
             access_token=access_token,
