@@ -25,21 +25,23 @@ class UserDBRepositoryAdapter(UserDBRepositoryPort):
         except Exception as e:
             return None
 
-    async def update_fcm_token(self, user: User, token: str):
-        async def _update_fcm_token():
-            try:
-                with transaction.atomic():
-                    user_dbo = UserDBO.objects.get(email=user.email)
-                    device, created = user_dbo.devices.get_or_create(token=token)
+    async def update_fcm_token(self, user: User, token: str, platform: str):
+        # Operaciones síncronas deben ejecutarse con sync_to_async
+        @sync_to_async
+        def update_token_sync():
+            with transaction.atomic():
+                user_dbo = UserDBO.objects.get(email=user.email)
+                device, created = user_dbo.devices.get_or_create(device_id=token, platform=platform)
+                return created
 
-                    if created:
-                        print(f'New device created with token: {token}')
-                    else:
-                        print(f'Device with token {token} already exists')
-            except UserDBO.DoesNotExist:
-                raise ValueError(f'User with email {user.email} does not exist')
-            except Exception as e:
-                raise ValueError(f'Failed to update FCM token: {str(e)}')
-
-        await sync_to_async(_update_fcm_token)()
+        try:
+            created = await update_token_sync()
+            if created:
+                print(f'New device created with token: {token}')
+            else:
+                print(f'Device with token {token} already exists')
+        except UserDBO.DoesNotExist:
+            raise ValueError(f'User with email {user.email} does not exist')
+        except Exception as e:
+            raise ValueError(f'Failed to update FCM token: {str(e)}')
 

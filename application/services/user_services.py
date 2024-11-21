@@ -10,5 +10,5 @@ class UserServices(UserServicePort):
     async def get(self, email: str) -> User:
         return self.db_repository.get(email)
 
-    async def update_fcm_token(self, user: User, token: str):
-        return await self.db_repository.update_fcm_token(user, token)
+    async def update_fcm_token(self, user: User, token: str, platform: str):
+        return await self.db_repository.update_fcm_token(user, token, platform)

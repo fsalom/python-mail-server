@@ -13,5 +13,5 @@ class UserDBRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    def update_fcm_token(self, user: User, token: str):
+    def update_fcm_token(self, user: User, token: str, platform: str):
         pass

@@ -8,5 +8,5 @@ class UserServicePort(ABC):
         pass
 
     @abstractmethod
-    async def update_fcm_token(self, user: User, token: str):
+    async def update_fcm_token(self, user: User, token: str, platform: str):
         pass
