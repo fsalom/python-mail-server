@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from dependency_injector.wiring import Provide
+from dependency_injector.wiring import Provide, inject
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from starlette import status
@@ -17,6 +17,7 @@ user_router = APIRouter()
 
 
 @user_router.get('/users/me')
+@inject
 async def me(user: Annotated[User, Depends(get_user_or_refuse)],
              api_mapper: UserDTOMapper = Depends(Provide[UserContainer.api_mapper])):
     return JSONResponse(
@@ -26,11 +27,12 @@ async def me(user: Annotated[User, Depends(get_user_or_refuse)],
 
 
 @user_router.patch('/users/me/device')
+@inject
 async def update_fcm(user: Annotated[User, Depends(get_user_or_refuse)],
                      fcm_request: FCMRequest,
                      service: UserServicePort = Depends(Provide[UserContainer.service]),
                      api_mapper: UserDTOMapper = Depends(Provide[UserContainer.api_mapper])):
-    await service.update_fcm_token(user, fcm_request.device_id)
+    await service.update_fcm_token(user, fcm_request.device_id, fcm_request.platform)
     return JSONResponse(
         status_code=status.HTTP_200_OK,
         content=jsonable_encoder(api_mapper.to_dto(user))
