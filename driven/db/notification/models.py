@@ -19,8 +19,8 @@ class DeviceDBO(models.Model):
     )
 
     class Meta:
-        verbose_name = _("FCMDevice")
-        verbose_name_plural = _("FCMDevices")
+        verbose_name = _("Dispositivo")
+        verbose_name_plural = _("Dispositivos")
 
     def __str__(self) -> str:
         return f"{self.device_id} - {self.user_id}"
@@ -35,6 +35,10 @@ class NotificationDBO(models.Model):
         UserDBO, on_delete=models.CASCADE, related_name='created_notifications'  # Cambié "notifications" por "created_notifications"
     )
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("Notificación")
+        verbose_name_plural = _("Notificaciones")
 
     def __str__(self):
         return self.title
@@ -51,7 +55,10 @@ class UserNotificationDBO(models.Model):
     read_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        verbose_name = _("Notificación a usuario")
+        verbose_name_plural = _("Notificaciones a usuarios")
         unique_together = ('user', 'notification')
+
 
     def __str__(self):
         return f"Notification to {self.user.email}: {self.notification.title}"
