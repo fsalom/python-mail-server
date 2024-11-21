@@ -14,3 +14,10 @@ class UserRequest(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class FCMRequest(BaseModel):
+    device_id: str
+
+    class Config:
+        from_attributes = True
