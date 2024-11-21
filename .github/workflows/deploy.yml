@@ -22,7 +22,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
           if [ ! -d /root/app ]; then
-            git clone https://fsalom:${{ secrets.GIT_TOKEN }}@github.com/fsalom/python-mail-server.git /root/app;
+            git clone https://fsalom:"${{ secrets.GIT_TOKEN }}"@github.com/fsalom/python-mail-server.git /root/app;
           else
             cd /root/app && git pull origin main;
           fi
