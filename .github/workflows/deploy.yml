@@ -23,7 +23,7 @@ jobs:
         ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
           if [ ! -d /root/app ]; then
             rm -rf python-mail-server
-            git clone https://https://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@github.com/fsalom/python-mail-server.git@github.com/fsalom/python-mail-server.git /root/app;
+            git clone https://https://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@github.com/fsalom/python-mail-server.git /root/app;
           else
             cd /root/app && git pull origin main;
           fi
