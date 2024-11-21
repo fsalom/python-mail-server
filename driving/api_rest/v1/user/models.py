@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -18,6 +20,7 @@ class UserRequest(BaseModel):
 
 class FCMRequest(BaseModel):
     device_id: str
+    platform: Literal['ios', 'android']
 
     class Config:
         from_attributes = True
