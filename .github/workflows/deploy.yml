@@ -21,7 +21,7 @@ jobs:
     - name: Clone repository on server
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        rm -rf python-mail-server
+        rm -rf /root/app
         git clone https://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@github.com/fsalom/python-mail-server.git /root/app;
         "
     - name: Install docker
