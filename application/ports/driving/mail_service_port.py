@@ -8,3 +8,7 @@ class MailServicePort(ABC):
     @abstractmethod
     def process(self):
         pass
+
+    @abstractmethod
+    def test(self):
+        pass

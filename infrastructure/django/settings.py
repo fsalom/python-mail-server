@@ -13,6 +13,9 @@ import os
 import secrets
 from pathlib import Path
 
+import firebase_admin
+from firebase_admin import credentials
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -172,4 +175,7 @@ CACHES = {
         "BACKEND": "django.core.cache.backends.dummy.DummyCache",
     }
 }
+
+cred = credentials.Certificate("credentials.json")
+firebase_admin.initialize_app(cred)
 

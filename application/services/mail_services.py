@@ -155,8 +155,8 @@ class MailServices(MailServicePort):
             products.append(product)
         return products
 
-        def test(self):
-            content = '''MERCADONA, S.A. A-46103834
+    def test(self):
+        content = '''MERCADONA, S.A. A-46103834
     C/ MENÉNDEZ Y PELAYO 35
     46010 VALENCIA
     TELÉFONO: 963613959
@@ -198,7 +198,8 @@ class MailServices(MailServicePort):
     Importe: 8,79 € MASTERCARD
     SE ADMITEN DEVOLUCIONES CON TICKET
             '''
-            ticket = self.analyze(content=content, email="mail")
+        ticket = self.analyze(content=content, email="fdosalom@gmail.com")
+        self.send_notification("fdosalom@gmail.com")
 
     @staticmethod
     def extract_products_section(ticket_text):

@@ -4,7 +4,7 @@ from domain.user import User
 
 
 class Notification(BaseModel):
-    id: int
+    id: Optional[int] = None
     title: str
     content: str
     data: Optional[Dict[str, Any]] = Field(default=None)
