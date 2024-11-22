@@ -23,20 +23,33 @@ class NotificationService(NotificationServicePort):
     def create_notification(self, notification: Notification) -> Notification:
         return self.notification_db.create_notification(notification)
 
+    def get_devices(self, user: User) -> List[Device]:
+        return self.notification_db.get_devices(user=user)
+
     def send_single_notification(self, notification: Notification, token: str):
         notification = self.notification_db.create_notification(notification)
-        self.firebase.send_single_notification(notification, token)
+        updated_notification = self.firebase.send_single_notification(notification, token)
+        self._remove_invalid_device_ids(updated_notification.invalid_device_ids)
 
     def send_single_silent_notification(self, notification: Notification, token: str):
         notification = self.create_notification(notification)
-        self.firebase.send_single_silent_notification(notification, token)
+        updated_notification = self.firebase.send_single_silent_notification(notification, token)
+        self._remove_invalid_device_ids(updated_notification.invalid_device_ids)
 
     def send_bulk_notification(self, notification: Notification, tokens: List[str]) -> Notification:
         notification = self.create_notification(notification)
-        self.firebase.send_bulk_notification(notification, tokens)
+        updated_notification = self.firebase.send_bulk_notification(notification, tokens)
+        self._remove_invalid_device_ids(updated_notification.invalid_device_ids)
         return notification
 
     def send_bulk_silent_notification(self, notification: Notification, tokens: List[str]) -> Notification:
         notification = self.create_notification(notification)
-        self.firebase.send_bulk_silent_notification(notification, tokens)
+        updated_notification = self.firebase.send_bulk_silent_notification(notification, tokens)
+        self._remove_invalid_device_ids(updated_notification.invalid_device_ids)
         return notification
+
+    def _remove_invalid_device_ids(self, devices_ids: List[str]):
+        if devices_ids is None:
+            return
+        for device_id in devices_ids:
+            self.notification_db.remove_device(device_id)
