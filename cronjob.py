@@ -1,5 +1,8 @@
 import os
 import django
+
+from application.services.notification_service import NotificationService
+
 django.setup()
 
 from driven.db.notification.mapper import NotificationDBMapper
@@ -23,15 +26,18 @@ def run_cronjob():
     ticket_db_repository_adapter = TicketDBRepositoryAdapter(mapper=TicketDBMapper())
     mail_db_repository_adapter = MailDBRepositoryAdapter()
     firebase_repository_adapter = FirebaseRepositoryAdapter()
-    notification_repository_adapter = NotificationDBRepositoryAdapter(mapper=NotificationDBMapper())
-    user_repository_adapter = UserDBRepositoryAdapter(mapper=UserDBMapper())
+    user_mapper = UserDBMapper()
+    notification_repository_adapter = NotificationDBRepositoryAdapter(mapper=NotificationDBMapper(user_mapper=user_mapper))
+    user_repository_adapter = UserDBRepositoryAdapter(mapper=user_mapper)
+
+    notification_service = NotificationService(notification_db=notification_repository_adapter,
+                                               firebase=firebase_repository_adapter)
 
     service = MailServices(mail_repository=mail_repository_adapter,
                            ticket_db_repository=ticket_db_repository_adapter,
                            mail_db_repository=mail_db_repository_adapter,
                            user_db_repository=user_repository_adapter,
-                           notification_db_repository=notification_repository_adapter,
-                           firebase_repository=firebase_repository_adapter)
+                           notification_service=notification_service)
 
     adapter = MailsAdapter(service=service)
     adapter.schedule_jobs()
