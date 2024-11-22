@@ -16,6 +16,10 @@ class NotificationServicePort(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def get_devices(self, user: User) -> List[Device]:
+        raise NotImplementedError
+
+    @abstractmethod
     def send_single_notification(self, notification: Notification, token: str) -> Notification:
         raise NotImplementedError
 
