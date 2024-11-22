@@ -22,3 +22,7 @@ class NotificationDBRepositoryPort(ABC):
     @abstractmethod
     def add_notification_to_user(self, notification: Notification, user: User):
         raise NotImplementedError
+
+    @abstractmethod
+    def remove_device(self, device_id: str):
+        raise NotImplementedError

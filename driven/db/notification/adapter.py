@@ -26,13 +26,19 @@ class NotificationDBRepositoryAdapter(NotificationDBRepositoryPort):
         return [self.mapper.from_device_dbo_to_domain(device) for device in devices]
 
     def create_notification(self, notification: Notification) -> Notification:
+        if not notification.created_by or not hasattr(notification.created_by, "id"):
+            raise ValueError("El campo 'created_by' es obligatorio y debe contener un ID válido.")
+        try:
+            user_dbo = UserDBO.objects.get(email=notification.created_by.email)
+        except UserDBO.DoesNotExist:
+            raise ValueError(f"No se encontró un usuario con ID {notification.created_by.id}.")
+
         notification = NotificationDBO.objects.create(
             title=notification.title,
             message=notification.content,
             data=notification.data,
-            created_by=notification.created_by
+            created_by=user_dbo
         )
-
         return self.mapper.from_notification_dbo_to_domain(notification)
 
     def add_notification_to_user(self, notification: Notification, user: User):
@@ -43,3 +49,9 @@ class NotificationDBRepositoryAdapter(NotificationDBRepositoryPort):
             notification=notification_dbo,
             user=user_dbo,
         )
+
+    def remove_device(self, device_id: str):
+        if not device_id:
+            return
+        device = DeviceDBO.objects.get(device_id=device_id)
+        device.delete()

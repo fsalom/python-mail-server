@@ -29,7 +29,7 @@ class DeviceDBO(models.Model):
 class NotificationDBO(models.Model):
     title = models.CharField(max_length=255)
     message = models.TextField()
-    data = models.JSONField(default=dict)
+    data = models.JSONField(default=dict, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(
         UserDBO, on_delete=models.CASCADE, related_name='created_notifications'  # Cambié "notifications" por "created_notifications"
