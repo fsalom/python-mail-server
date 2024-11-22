@@ -7,6 +7,7 @@ from application.ports.driven.database.user.db_repository import UserDBRepositor
 from application.ports.driven.firebase.repository import FirebaseRepositoryPort
 from application.ports.driven.mail.mail_repository_port import MailRepositoryPort
 from application.ports.driving.mail_service_port import MailServicePort
+from application.ports.driving.notification_service_port import NotificationServicePort
 from domain.notification import Notification
 from domain.product import Product
 from domain.ticket import Ticket
@@ -18,15 +19,14 @@ class MailServices(MailServicePort):
                  ticket_db_repository: TicketDBRepositoryPort,
                  mail_db_repository: MailDBRepositoryPort,
                  user_db_repository: UserDBRepositoryPort,
-                 notification_db_repository: NotificationDBRepositoryPort,
-                 firebase_repository: FirebaseRepositoryPort,
+                 notification_service: NotificationServicePort
                  ):
         self.mail_repository = mail_repository
         self.ticket_db_repository = ticket_db_repository
         self.mail_db_repository = mail_db_repository
-        self.notification_db_repository = notification_db_repository
-        self.firebase_repository = firebase_repository
         self.user_db_repository = user_db_repository
+
+        self.notification_service = notification_service
 
     def process(self):
         mails = self.mail_repository.read()
@@ -41,7 +41,8 @@ class MailServices(MailServicePort):
             if not user:
                 raise ValueError(f"No user found with email: {email}")
 
-            devices = list(self.notification_db_repository.get_devices(user))
+            devices = list(self.notification_service.get_devices(user))
+            print(devices)
             if not devices:
                 return
 
@@ -51,11 +52,11 @@ class MailServices(MailServicePort):
                 created_by=user)
 
             if len(devices) > 1:
-                self.firebase_repository.send_bulk_notification(
+                self.notification_service.send_bulk_notification(
                     notification, [device.device_id for device in devices]
                 )
             else:
-                self.firebase_repository.send_single_notification(
+                self.notification_service.send_single_notification(
                     notification, devices[0].device_id
                 )
 
