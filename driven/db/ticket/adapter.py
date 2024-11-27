@@ -132,11 +132,11 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
                     email__email=current_user,
                     date__gte=_date_range.start,
                     date__lte=_date_range.end
-                ).order_by('+date')
+                ).order_by('date')
             else:
                 tickets = TicketDBO.objects.filter(
                     email__email=current_user
-                ).order_by('+date')
+                ).order_by('date')
 
             grouped_tickets = defaultdict(list)
             for ticket in tickets:
