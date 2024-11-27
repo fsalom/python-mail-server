@@ -1,5 +1,8 @@
+from typing import List, Dict
+
 from domain.product import Product
 from domain.ticket import Ticket
+from domain.ticket_month import TicketsMonth
 from driven.db.product.models import ProductDBO, ProductPriceHistoryDBO
 from driven.db.store.models import StoreDBO
 from driven.db.ticket.models import TicketDBO, TicketProductDBO
@@ -93,3 +96,17 @@ class TicketDBMapper:
 
             products_dbo.append(product_dbo)
         return products_dbo
+
+    @staticmethod
+    def ticket_month_dict_to_domain(dict_tickets: Dict[str, List[Ticket]]) -> List[TicketsMonth]:
+        ticket_months = []
+        for month, tickets in dict_tickets.items():
+            ticket_month = TicketsMonth(
+                month=month,
+                num_tickets=0,
+                total=0.0,
+                tickets=TicketDBMapper.to_domain(tickets)
+            )
+            ticket_months.append(ticket_month)
+
+        return ticket_months
