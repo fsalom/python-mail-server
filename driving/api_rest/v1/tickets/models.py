@@ -35,6 +35,16 @@ class AllTicketsResponse(BaseModel):
         arbitrary_types_allowed = True
 
 
+class TicketsMonthResponse(BaseModel):
+    month: str
+    num_tickets: int
+    total: float
+    tickets: List[TicketResponse]
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class StatsForTicketsResponse(BaseModel):
     num_tickets: int
     num_products: int

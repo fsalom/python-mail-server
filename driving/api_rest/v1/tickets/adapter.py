@@ -29,6 +29,18 @@ async def me(user: Annotated[User, Depends(get_user_or_refuse)],
         )
 
 
+@ticket_router.get('/tickets/by_month')
+@inject
+async def me(user: Annotated[User, Depends(get_user_or_refuse)],
+             service: TicketServicePort = Depends(Provide[TicketContainer.service]),
+             api_mapper: TicketDTOMapper = Depends(Provide[TicketContainer.api_mapper])):
+    tickets = await service.get_tickets_grouped_by_month(user=user.email, date_range=None)
+    return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=jsonable_encoder(api_mapper.from_tickets_month_to_dto(tickets))
+        )
+
+
 @ticket_router.get('/tickets/stats')
 @inject
 async def stats(user: Annotated[User, Depends(get_user_or_refuse)],
