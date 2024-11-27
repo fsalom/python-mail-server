@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from domain.date_range import DateRange
 from domain.product import Product
 from domain.ticket import Ticket
+from domain.ticket_month import TicketsMonth
 
 
 class TicketServicePort(ABC):
@@ -28,4 +30,8 @@ class TicketServicePort(ABC):
 
     @abstractmethod
     async def update_existing_tickets(self):
+        pass
+
+    @abstractmethod
+    async def get_tickets_grouped_by_month(self, user: str, date_range: DateRange) -> List[TicketsMonth]:
         pass
