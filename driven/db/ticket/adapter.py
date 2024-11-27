@@ -149,7 +149,7 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
                 ticket_month.num_tickets = len(ticket_month.tickets)
                 ticket_month.total = round(sum(ticket.total or 0.0 for ticket in ticket_month.tickets), 2)
 
-            ticket_months.sort(key=lambda tm: tm.month, reverse=True)
+            ticket_months.sort(key=lambda tm: tm.month, reverse=False)
 
             return ticket_months
 
