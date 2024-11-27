@@ -1,3 +1,5 @@
+from typing import List
+
 from asgiref.sync import sync_to_async
 
 from application.ports.driven.database.ticket.db_repository import TicketDBRepositoryPort
@@ -6,6 +8,7 @@ from application.ports.driving.tickets_service_port import TicketServicePort
 from domain.date_range import DateRange
 from domain.product import Product
 from domain.ticket import Ticket
+from domain.ticket_month import TicketsMonth
 
 
 class TicketServices(TicketServicePort):
@@ -30,3 +33,6 @@ class TicketServices(TicketServicePort):
 
     async def update_existing_tickets(self):
         await self.db_repository.update_existing_tickets()
+
+    async def get_tickets_grouped_by_month(self, user: str, date_range: DateRange) -> List[TicketsMonth]:
+        return await self.db_repository.get_tickets_grouped_by_month(user, date_range)

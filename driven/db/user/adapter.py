@@ -26,7 +26,6 @@ class UserDBRepositoryAdapter(UserDBRepositoryPort):
             return None
 
     async def update_fcm_token(self, user: User, token: str, platform: str):
-        # Operaciones síncronas deben ejecutarse con sync_to_async
         @sync_to_async
         def update_token_sync():
             with transaction.atomic():

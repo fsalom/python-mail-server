@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
+from typing import List
 
 from domain.date_range import DateRange
 from domain.product import Product
 from domain.ticket import Ticket
+from domain.ticket_month import TicketsMonth
 
 
 class TicketDBRepositoryPort(ABC):
@@ -33,4 +35,8 @@ class TicketDBRepositoryPort(ABC):
 
     @abstractmethod
     async def get_top_products_for(self, user: str, date_range: DateRange, number: int = 10) -> [Product]:
+        pass
+
+    @abstractmethod
+    async def get_tickets_grouped_by_month(self, user: str, date_range: DateRange) -> List[TicketsMonth]:
         pass

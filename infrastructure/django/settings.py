@@ -176,6 +176,9 @@ CACHES = {
     }
 }
 
-cred = credentials.Certificate("credentials.json")
-firebase_admin.initialize_app(cred)
+try:
+    cred = credentials.Certificate("credentials.json")
+    firebase_admin.initialize_app(cred)
+except Exception as e:
+    print(e)
 
