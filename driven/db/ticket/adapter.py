@@ -151,6 +151,14 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
 
             ticket_months.sort(key=lambda tm: tm.month, reverse=True)
 
+            for i in range(len(ticket_months)):
+                if i < len(ticket_months) - 1:
+                    current_month = ticket_months[i]
+                    previous_month = ticket_months[i + 1]
+                    current_month.total_difference = current_month.total - previous_month.total
+                else:
+                    ticket_months[i].total_difference = None  # No hay mes anterior
+
             return ticket_months
 
         ticket_months = await sync_to_async(_group_tickets_by_month)(user, date_range)

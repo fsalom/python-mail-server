@@ -56,6 +56,7 @@ class TicketDTOMapper:
                 month=ticket_month.month,
                 num_tickets=ticket_month.num_tickets,
                 total=ticket_month.total,
+                total_difference=tickets_by_month.total_difference,
                 tickets=TicketDTOMapper.tickets_to_dto(ticket_month.tickets),
             )
             for ticket_month in tickets_by_month
