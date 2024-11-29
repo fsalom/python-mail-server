@@ -39,7 +39,7 @@ class TicketsMonthResponse(BaseModel):
     month: str
     num_tickets: int
     total: float
-    total_difference: float
+    total_difference: Optional[float] = None
     tickets: List[TicketResponse]
 
     class Config:
